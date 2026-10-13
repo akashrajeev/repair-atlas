@@ -1,0 +1,14 @@
+{
+  "name": "repair-atlas",
+  "version": "0.1.0",
+  "description": "Find every minimal combination of repairs that fixes a failed multi-agent workflow, and replay each one as proof.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "node scripts/serve.js",
+    "test": "node --test "test/*.test.js"",
+    "coverage": "node --test --experimental-test-coverage "test/*.test.js"",
+    "analyze": "node src/cli.js analyze"
+  },
+  "engines": { "node": ">=20" }
+}

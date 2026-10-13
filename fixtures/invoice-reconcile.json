@@ -1,0 +1,18 @@
+{
+  "name": "Invoice reconciliation",
+  "pattern": "joint AND",
+  "story": "A Ledger agent and a Tax agent each sent a wrong figure. The books only balance when both are fixed.",
+  "agents": ["Intake", "Ledger", "Tax", "Reviewer", "Auditor"],
+  "events": [
+    { "id": "invoice_total", "agent": "Intake", "label": "Invoice total", "op": "const", "value": 1000 },
+    { "id": "line_items", "agent": "Ledger", "label": "Line-item subtotal", "op": "const", "value": 600, "observed": 540, "clean": 600 },
+    { "id": "tax_amount", "agent": "Tax", "label": "Tax amount", "op": "const", "value": 400, "observed": 340, "clean": 400 },
+    { "id": "rounding", "agent": "Reviewer", "label": "Rounding adjustment", "op": "const", "value": 0, "observed": 0.3, "clean": 0 },
+    { "id": "ledger_total", "agent": "Ledger", "label": "Ledger total", "op": "round", "args": ["ledger_sum"] },
+    { "id": "ledger_sum", "agent": "Ledger", "label": "Sum of parts", "op": "add", "args": ["line_items", "tax_amount", "rounding"] },
+    { "id": "balanced", "agent": "Auditor", "label": "Books balance?", "op": "eq", "args": ["ledger_total", "invoice_total"] },
+    { "id": "audit_note", "agent": "Auditor", "label": "Audit note id", "op": "const", "value": 41, "observed": 14, "clean": 41 },
+    { "id": "audit_log", "agent": "Auditor", "label": "Audit log entry", "op": "add", "args": ["audit_note", "invoice_total"] }
+  ],
+  "checks": [ { "id": "books_balance", "label": "Books balance", "event": "balanced", "expect": { "truthy": true } } ]
+}

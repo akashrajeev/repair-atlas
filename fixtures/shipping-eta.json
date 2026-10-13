@@ -1,0 +1,17 @@
+{
+  "name": "Shipping ETA",
+  "pattern": "single fault",
+  "story": "One carrier estimate was wrong. Fixing it alone brings the ETA inside the promise. Everything else is noise.",
+  "agents": ["Carrier", "Customs", "Hub", "Promise"],
+  "events": [
+    { "id": "transit_days", "agent": "Carrier", "label": "Transit days", "op": "const", "value": 2, "observed": 9, "clean": 2 },
+    { "id": "customs_days", "agent": "Customs", "label": "Customs days", "op": "const", "value": 1 },
+    { "id": "hub_days", "agent": "Hub", "label": "Hub handoff days", "op": "const", "value": 1, "observed": 1.5, "clean": 1 },
+    { "id": "eta", "agent": "Promise", "label": "ETA days", "op": "add", "args": ["transit_days", "customs_days", "hub_days"] },
+    { "id": "promise", "agent": "Promise", "label": "Promise days", "op": "const", "value": 5 },
+    { "id": "on_time", "agent": "Promise", "label": "On time?", "op": "lte", "args": ["eta", "promise"] },
+    { "id": "carrier_note", "agent": "Carrier", "label": "Carrier note code", "op": "const", "value": 7, "observed": 70, "clean": 7 },
+    { "id": "note_log", "agent": "Carrier", "label": "Note log", "op": "concat", "args": ["carrier_note", "transit_days"] }
+  ],
+  "checks": [ { "id": "delivery_on_time", "label": "Delivery is on time", "event": "on_time", "expect": { "truthy": true } } ]
+}

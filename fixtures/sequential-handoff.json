@@ -1,0 +1,15 @@
+{
+  "name": "Sequential handoff",
+  "pattern": "chained AND (outside the paper's pair rule)",
+  "story": "Sales sent a wrong quantity, and Logistics then sent a wrong fee computed from it. One event feeds the other, which the published pair rule excludes. Exhaustive replay finds the pair anyway.",
+  "agents": ["Sales", "Logistics", "Billing"],
+  "events": [
+    { "id": "order_qty", "agent": "Sales", "label": "Order quantity", "op": "const", "value": 10, "observed": 12, "clean": 10 },
+    { "id": "rate", "agent": "Logistics", "label": "Fee per unit", "op": "const", "value": 2 },
+    { "id": "ship_fee", "agent": "Logistics", "label": "Shipping fee", "op": "mul", "args": ["order_qty", "rate"], "observed": 36, "clean": 20 },
+    { "id": "unit_price", "agent": "Billing", "label": "Unit price", "op": "const", "value": 5 },
+    { "id": "goods", "agent": "Billing", "label": "Goods total", "op": "mul", "args": ["order_qty", "unit_price"] },
+    { "id": "invoice", "agent": "Billing", "label": "Invoice total", "op": "add", "args": ["goods", "ship_fee"] }
+  ],
+  "checks": [ { "id": "invoice_matches_po", "label": "Invoice equals purchase order (70)", "event": "invoice", "expect": { "eq": 70 } } ]
+}

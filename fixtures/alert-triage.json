@@ -1,0 +1,16 @@
+{
+  "name": "Alert triage",
+  "pattern": "alternative OR",
+  "story": "Two detectors both under-reported risk. Fixing either one is enough to page on-call, so neither is the one root cause.",
+  "agents": ["Planner", "LogDetector", "MetricDetector", "Router"],
+  "events": [
+    { "id": "threshold", "agent": "Planner", "label": "Page threshold", "op": "const", "value": 80 },
+    { "id": "log_risk", "agent": "LogDetector", "label": "Log risk score", "op": "const", "value": 90, "observed": 35, "clean": 90 },
+    { "id": "metric_risk", "agent": "MetricDetector", "label": "Metric risk score", "op": "const", "value": 85, "observed": 20, "clean": 85 },
+    { "id": "worst", "agent": "Router", "label": "Worst signal", "op": "max", "args": ["log_risk", "metric_risk"] },
+    { "id": "page", "agent": "Router", "label": "Page on-call?", "op": "gte", "args": ["worst", "threshold"] },
+    { "id": "ticket_tag", "agent": "Router", "label": "Ticket tag", "op": "const", "value": 3, "observed": 9, "clean": 3 },
+    { "id": "ticket", "agent": "Router", "label": "Ticket id", "op": "add", "args": ["ticket_tag", "threshold"] }
+  ],
+  "checks": [ { "id": "pages_oncall", "label": "On-call is paged", "event": "page", "expect": { "truthy": true } } ]
+}

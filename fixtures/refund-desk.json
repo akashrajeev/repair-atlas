@@ -1,0 +1,19 @@
+{
+  "name": "Refund desk",
+  "pattern": "OR of AND",
+  "defaultMaxSize": 3,
+  "story": "A refund is approved by a manager override, or by a policy match plus an amount inside the cap. One shortcut and one three-part route.",
+  "agents": ["Policy", "Calc", "Manager", "Decider"],
+  "events": [
+    { "id": "reason", "agent": "Policy", "label": "Refund reason", "op": "const", "value": "weather", "observed": "other", "clean": "weather" },
+    { "id": "refund_amount", "agent": "Calc", "label": "Refund amount", "op": "const", "value": 120, "observed": 240, "clean": 120 },
+    { "id": "cap", "agent": "Policy", "label": "Auto-approve cap", "op": "const", "value": 150, "observed": 100, "clean": 150 },
+    { "id": "override", "agent": "Manager", "label": "Manager override", "op": "const", "value": true, "observed": false, "clean": true },
+    { "id": "weather", "agent": "Decider", "label": "Weather word", "op": "const", "value": "weather" },
+    { "id": "policy_match", "agent": "Policy", "label": "Policy matches", "op": "eq", "args": ["reason", "weather"] },
+    { "id": "within_cap", "agent": "Calc", "label": "Within cap", "op": "lte", "args": ["refund_amount", "cap"] },
+    { "id": "auto_ok", "agent": "Decider", "label": "Auto route ok", "op": "and", "args": ["policy_match", "within_cap"] },
+    { "id": "approved", "agent": "Decider", "label": "Refund approved?", "op": "or", "args": ["auto_ok", "override"] }
+  ],
+  "checks": [ { "id": "refund_approved", "label": "Refund is approved", "event": "approved", "expect": { "truthy": true } } ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "Release gate",
+  "pattern": "three-way AND",
+  "defaultMaxSize": 3,
+  "story": "Three reviewers each withheld sign-off. The gate needs all three. A pair-only search finds nothing, so the size bound has to be raised.",
+  "agents": ["CI", "CodeReview", "Legal", "Release"],
+  "events": [
+    { "id": "tests_green", "agent": "CI", "label": "Tests green", "op": "const", "value": 1, "observed": 0, "clean": 1 },
+    { "id": "review_ok", "agent": "CodeReview", "label": "Review approved", "op": "const", "value": 1, "observed": 0, "clean": 1 },
+    { "id": "license_ok", "agent": "Legal", "label": "License cleared", "op": "const", "value": 1, "observed": 0, "clean": 1 },
+    { "id": "approvals", "agent": "Release", "label": "Approvals", "op": "add", "args": ["tests_green", "review_ok", "license_ok"] },
+    { "id": "required", "agent": "Release", "label": "Required approvals", "op": "const", "value": 3 },
+    { "id": "ship", "agent": "Release", "label": "Ship it?", "op": "gte", "args": ["approvals", "required"] }
+  ],
+  "checks": [ { "id": "release_ships", "label": "Release ships", "event": "ship", "expect": { "truthy": true } } ]
+}
