@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en" data-theme="a">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Repair Atlas</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true"><circle cx="7" cy="9" r="3.2"/><circle cx="7" cy="23" r="3.2"/><circle cx="25" cy="16" r="3.6" class="hub"/><path d="M10 9.5C17 9.5 17 16 21.5 16M10 22.5C17 22.5 17 16 21.5 16" fill="none"/></svg><span>Repair Atlas</span></div>
+  <label class="field">Failed run
+    <select id="pick"></select>
+  </label>
+  <label class="field">Repair size bound
+    <select id="bound"><option value="1">1 (single)</option><option value="2">2 (pairs)</option><option value="3">3 (triples)</option><option value="4">4</option></select>
+  </label>
+  <button id="importBtn" class="ghost">Load workflow JSON</button>
+  <button id="verifyBtn" class="ghost">Verify a witness file</button>
+</header>
+<main>
+  <section class="story"><h1 id="title"></h1><p id="story"></p></section>
+  <section class="stage">
+    <div class="graphwrap"><svg id="graph" role="img" aria-label="Workflow event graph"></svg></div>
+    <aside class="side">
+      <div class="card formula"><div class="eyebrow">Recovery formula</div><div id="formula"></div><div id="kind" class="chip"></div></div>
+      <div class="card"><div class="eyebrow">Minimal repair families</div><div id="families"></div></div>
+      <div class="card"><div class="eyebrow">Event roles</div><div id="roles"></div></div>
+    </aside>
+  </section>
+  <section class="replay card">
+    <div class="rhead">
+      <div><div class="eyebrow">Replay witness</div><div id="wtitle" class="wtitle"></div></div>
+      <div class="controls">
+        <button id="play">Play replay</button>
+        <input id="scrub" type="range" min="0" value="0" aria-label="Replay step">
+        <button id="dl" class="ghost">Download witness</button>
+      </div>
+    </div>
+    <div id="proof"></div>
+  </section>
+  <section class="compare card"><div class="eyebrow">What each search had to replay</div><div id="compare"></div></section>
+  <p class="foot">Replays use a deterministic executor over recorded message payloads. Repairs are supplied clean payloads; Repair Atlas finds which combinations matter, it does not invent fixes.</p>
+</main>
+<dialog id="dlg"><form method="dialog"><h2 id="dlgTitle"></h2><textarea id="dlgText" spellcheck="false"></textarea><div id="dlgMsg" class="msg"></div><menu><button value="cancel" class="ghost">Close</button><button id="dlgGo" value="default">Run</button></menu></form></dialog>
+<script type="module" src="app.js"></script>
+</body>
+</html>
