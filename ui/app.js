@@ -88,7 +88,7 @@ function renderSide() {
     h('span', { class: 'famkind' }, f.length === 1 ? 'fix alone' : `all ${f.length} together`), h('span', { class: 'famset' }, f.map((id) => state.c.byId.get(id).label ?? id).join('  +  ')))));
   if (!d.family.length) $('#families').replaceChildren(h('p', { class: 'muted' }, 'Raise the size bound to look for larger combinations.'));
   const roleText = { solo: 'fixes it alone', 'required-and': 'needed with partners', 'and-partner': 'part of a joint repair', mixed: 'in several repairs', irrelevant: 'does not matter' };
-  $('#roles').replaceChildren(...Object.entries(d.roles).map(([id, r]) => h('div', { class: `role r-${r.role}` }, h('i'), h('span', {}, state.c.byId.get(id).label ?? id), h('em', {}, roleText[r.role]))));
+  $('#roles').replaceChildren(...Object.entries(d.roles).map(([id, r]) => h('div', { class: `role r-${r.role}` }, h('i'), h('span', {}, state.c.byId.get(id).label ?? id), h('em', {}, r.inEverySet && d.family.length > 1 ? 'in every repair' : roleText[r.role]))));
   const set = selectedSet();
   $('#wtitle').textContent = set && set.length ? `Repair ${set.map((id) => state.c.byId.get(id).label ?? id).join(' + ')}` : 'No repair to replay';
   $('#scrub').max = state.c.order.length; $('#scrub').value = state.step;

@@ -1,0 +1,25 @@
+{
+  "name": "Incident paging pipeline",
+  "pattern": "two joint repairs sharing a core",
+  "defaultMaxSize": 3,
+  "story": "An incident was scored too low and the notifier was misconfigured. Two different combinations of score repairs work, but both need the Impact estimate and the notifier fix.",
+  "agents": ["Detector", "Enricher", "Scorer", "Notifier", "Housekeeping"],
+  "events": [
+    { "id": "severity", "agent": "Detector", "label": "Severity level", "op": "const", "value": 3, "observed": 1, "clean": 3 },
+    { "id": "impact", "agent": "Enricher", "label": "Impact estimate", "op": "const", "value": 40, "observed": 10, "clean": 40 },
+    { "id": "users", "agent": "Enricher", "label": "Affected users", "op": "const", "value": 500, "observed": 50, "clean": 500 },
+    { "id": "region_tag", "agent": "Enricher", "label": "Region tag", "op": "const", "value": 2, "observed": 8, "clean": 2 },
+    { "id": "sev_points", "agent": "Scorer", "label": "Severity points", "op": "mul", "args": ["severity", "ten"] },
+    { "id": "ten", "agent": "Scorer", "label": "Severity weight", "op": "const", "value": 10 },
+    { "id": "user_points", "agent": "Scorer", "label": "User points", "op": "div", "args": ["users", "fifty"] },
+    { "id": "fifty", "agent": "Scorer", "label": "User divisor", "op": "const", "value": 50 },
+    { "id": "score", "agent": "Scorer", "label": "Incident score", "op": "add", "args": ["sev_points", "impact", "user_points"] },
+    { "id": "threshold", "agent": "Scorer", "label": "Page threshold", "op": "const", "value": 60 },
+    { "id": "should_page", "agent": "Scorer", "label": "Should page?", "op": "gte", "args": ["score", "threshold"] },
+    { "id": "channel_ok", "agent": "Notifier", "label": "Channel configured", "op": "const", "value": true, "observed": false, "clean": true },
+    { "id": "notified", "agent": "Notifier", "label": "On-call notified?", "op": "and", "args": ["should_page", "channel_ok"] },
+    { "id": "dedupe_key", "agent": "Housekeeping", "label": "Dedupe key", "op": "const", "value": 11, "observed": 99, "clean": 11 },
+    { "id": "audit_row", "agent": "Housekeeping", "label": "Audit row", "op": "add", "args": ["dedupe_key", "region_tag"] }
+  ],
+  "checks": [ { "id": "oncall_notified", "label": "On-call is notified", "event": "notified", "expect": { "truthy": true } } ]
+}

@@ -18,6 +18,17 @@ test('fixtures: every family is the one we designed', () => {
   assert.deepEqual(fam(fx('refund-desk'), { maxSize: 3 }), ['override', 'reason+refund_amount+cap']);
 });
 
+test('incident pipeline: two joint repairs share a core', () => {
+  const c = fx('incident-pipeline');
+  assert.deepEqual(fam(c, { maxSize: 3 }), ['impact+users+channel_ok', 'severity+impact+channel_ok']);
+  const d = diagnose(c, { maxSize: 3 });
+  assert.ok(d.roles.impact.inEveryFamily ?? d.roles.impact.inEverySet);
+  assert.ok(d.roles.channel_ok.inEverySet);
+  assert.ok(!d.roles.severity.inEverySet);
+  assert.equal(d.roles.dedupe_key.role, 'irrelevant');
+  assert.ok(d.comparison.complete.replayCalls < d.comparison.exhaustive.replayCalls / 2);
+});
+
 test('size bound is honest: release gate has no repair of size <= 2', () => {
   assert.deepEqual(fam(fx('release-gate'), { maxSize: 2 }), []);
 });
