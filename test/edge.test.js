@@ -11,8 +11,6 @@ test('half-specified repairs are rejected; an already-passing run is reported, n
   const c = compile(strip(loadFixture('invoice-reconcile.json'), ['clean', 'observed']));
   assert.throws(() => diagnose(c, { maxSize: 3 }), /already passes/);
 });
-  assert.equal(d.families?.length ?? d.family?.length ?? 0, 0);
-});
 
 test('an unbounded-looking bound on a small workflow terminates', () => {
   const c = compile(loadFixture('release-gate.json'));
