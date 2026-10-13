@@ -1,10 +1,9 @@
 ---
 doc: spec
-status: draft
+status: approved
 ---
 # Repair Atlas - Technical Spec
 
-> Draft. Needs Akash's read and approval.
 
 ## How This Works, In Plain Language
 A workflow is a list of events. Each event has an agent, an operation, and inputs. Some events are faulty and carry both the faulty payload and a clean one. A repair swaps in the clean payload. Replay recomputes everything downstream and checks the result. The search tries repair sets from smallest to largest and keeps only those that pass while all their smaller subsets fail.
@@ -51,4 +50,4 @@ Cyclic or malformed workflows are rejected. Unknown operations are rejected. A p
 Replay is a deterministic executor, not a live LLM re-run, so results are exact and the demo needs no keys. The witness hash detects accidental edits and is not a cryptographic signature.
 
 ## Decisions and Open Issues
-Visual direction pending. Public repo, license and demo video pending Akash's go-ahead.
+Public repo, license and demo video pending Akash's go-ahead.

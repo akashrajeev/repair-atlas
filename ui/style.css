@@ -95,3 +95,9 @@ dialog menu { display:flex; justify-content:flex-end; gap:10px; padding:0; margi
 main { grid-template-columns: minmax(0, 1fr); }
 main > *, .stage > * { min-width: 0; }
 @media (max-width: 980px) { .stage { grid-template-columns: minmax(0, 1fr); } .prow { grid-template-columns: 14px 1fr; } .prow span { grid-column: 2; } .controls { flex-wrap: wrap; } input[type=range] { width: 100%; } }
+.left { min-width:0; display:grid; gap:10px; }
+.hint { color: var(--mute); font-size:14px; padding: 2px 4px; }
+.hint.minimal, .hint.extra, .hint.fail { padding:10px 14px; border-radius:10px; border:1px solid var(--line); background: var(--panel); color: var(--ink); }
+.hint.minimal { border-color: var(--good); } .hint.extra { border-color: var(--accent); } .hint.fail { border-color: var(--bad); }
+button.small { padding:4px 10px; font-size:12px; margin-left:8px; }
+.node.clickable { cursor: pointer; } .node.clickable:hover rect { stroke-width: 2.6; }

@@ -136,3 +136,15 @@ test('schedule invariance: any valid event order gives identical replays', () =>
     }
   }
 });
+
+import { judgeSet } from '../src/analysis.js';
+test('judging a hand-picked repair set', () => {
+  const c = fx('invoice-reconcile'); const d = diagnose(c);
+  assert.equal(judgeSet(c, d, ['line_items', 'tax_amount']).kind, 'minimal');
+  const extra = judgeSet(c, d, ['line_items', 'tax_amount', 'rounding']);
+  assert.deepEqual([extra.kind, extra.extra], ['extra', ['rounding']]);
+  const part = judgeSet(c, d, ['line_items']);
+  assert.deepEqual([part.kind, part.missing], ['partial', ['tax_amount']]);
+  assert.equal(judgeSet(c, d, ['rounding']).kind, 'none');
+  assert.equal(judgeSet(c, d, []).kind, 'none');
+});

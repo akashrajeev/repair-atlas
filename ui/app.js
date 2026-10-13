@@ -1,6 +1,6 @@
 import { compile, WorkflowError } from '../src/model.js';
 import { replay } from '../src/replay.js';
-import { diagnose, witnessFor, exportWitness, verifyWitness } from '../src/analysis.js';
+import { diagnose, judgeSet, witnessFor, exportWitness, verifyWitness } from '../src/analysis.js';
 import { NothingToRepairError } from '../src/search.js';
 import { layout, edgePath, NODE } from './layout.js';
 
@@ -20,7 +20,7 @@ const h = (tag, attrs = {}, ...kids) => {
 };
 const fmt = (v) => (typeof v === 'number' ? String(Math.round(v * 1000) / 1000) : typeof v === 'boolean' ? (v ? 'true' : 'false') : JSON.stringify(v));
 
-const state = { wf: null, c: null, d: null, sel: 0, step: null, timer: null, theme: new URLSearchParams(location.search).get('theme') || 'a' };
+const state = { wf: null, c: null, d: null, sel: 0, step: null, timer: null, theme: new URLSearchParams(location.search).get('theme') || 'b' };
 document.documentElement.dataset.theme = state.theme;
 
 async function boot() {
@@ -54,7 +54,7 @@ function run() {
   try { state.d = diagnose(state.c, { maxSize: Number($('#bound').value) }); }
   catch (e) { return showError(e instanceof NothingToRepairError ? e.message : String(e)); }
   state.lay = layout(state.c);
-  state.sel = 0; state.step = state.c.order.length;
+  state.sel = 0; state.manual = null; state.step = state.c.order.length;
   $('#title').textContent = state.wf.name;
   $('#story').textContent = state.wf.story ?? '';
   render();
@@ -65,7 +65,17 @@ function showError(msg) {
   $('#graph').replaceChildren();
 }
 
-function selectedSet() { return state.d.family[state.sel] ?? null; }
+function selectedSet() { if (state.manual) return [...state.manual]; return state.d.family[state.sel] ?? null; }
+
+function judge(c, d, set) {
+  const j = judgeSet(c, d, set);
+  const names = (ids) => ids.map(lab).join(' + ');
+  if (j.kind === 'minimal') return { kind: 'minimal', text: 'Passes, and this is a minimal repair.' };
+  if (j.kind === 'extra') return { kind: 'extra', text: j.extra.length ? `Passes, but ${names(j.extra)} ${j.extra.length > 1 ? 'are' : 'is'} not needed.` : 'Passes (larger than the size bound).' };
+  if (j.kind === 'partial') return { kind: 'fail', text: `Still fails. ${names(j.missing)} would complete a minimal repair.` };
+  return { kind: 'fail', text: 'Still fails. None of these helps alone or together.' };
+}
+const lab = (id) => state.c.byId.get(id).label ?? id;
 
 function render() { renderSide(); draw(); renderCompare(); }
 
@@ -74,15 +84,15 @@ function renderSide() {
   $('#formula').replaceChildren(...(d.family.length ? formulaNodes(d) : [h('span', { class: 'none' }, `No repair of size ${d.maxSize} or fewer`)]));
   $('#kind').textContent = { single: 'single root cause', 'joint-and': 'jointly necessary', 'alternative-or': 'alternatives', mixed: 'alternatives and joint repairs', none: 'outside the size bound' }[d.kind];
   $('#kind').dataset.kind = d.kind;
-  $('#families').replaceChildren(...d.family.map((f, i) => h('button', { class: 'fam' + (i === state.sel ? ' on' : ''), onclick: () => { stop(); state.sel = i; state.step = state.c.order.length; render(); } },
+  $('#families').replaceChildren(...d.family.map((f, i) => h('button', { class: 'fam' + (i === state.sel && !state.manual ? ' on' : ''), onclick: () => { stop(); state.manual = null; state.sel = i; state.step = state.c.order.length; render(); } },
     h('span', { class: 'famkind' }, f.length === 1 ? 'fix alone' : `all ${f.length} together`), h('span', { class: 'famset' }, f.map((id) => state.c.byId.get(id).label ?? id).join('  +  ')))));
   if (!d.family.length) $('#families').replaceChildren(h('p', { class: 'muted' }, 'Raise the size bound to look for larger combinations.'));
   const roleText = { solo: 'fixes it alone', 'required-and': 'needed with partners', 'and-partner': 'part of a joint repair', mixed: 'in several repairs', irrelevant: 'does not matter' };
   $('#roles').replaceChildren(...Object.entries(d.roles).map(([id, r]) => h('div', { class: `role r-${r.role}` }, h('i'), h('span', {}, state.c.byId.get(id).label ?? id), h('em', {}, roleText[r.role]))));
   const set = selectedSet();
-  $('#wtitle').textContent = set ? `Repair ${set.map((id) => state.c.byId.get(id).label ?? id).join(' + ')}` : 'No repair to replay';
+  $('#wtitle').textContent = set && set.length ? `Repair ${set.map((id) => state.c.byId.get(id).label ?? id).join(' + ')}` : 'No repair to replay';
   $('#scrub').max = state.c.order.length; $('#scrub').value = state.step;
-  $('#dl').disabled = !set; $('#play').disabled = !set;
+  $('#dl').disabled = !set || !set.length || !replay(state.c, set).success; $('#play').disabled = !set || !set.length;
 }
 
 function formulaNodes(d) {
@@ -138,6 +148,7 @@ function draw() {
       badge.append(el('circle', { cx: 8, cy: 8, r: 9 }), el('path', { d: k.pass ? 'M3.5 8.5l3 3 6-6.5' : 'M4.5 4.5l7 7M11.5 4.5l-7 7', fill: 'none', 'stroke-width': 2, class: 'glyph' }));
       g.append(badge);
     }
+    if (isCand) { g.classList.add('clickable'); g.addEventListener('click', () => toggle(id)); }
     const title = el('title'); title.textContent = `${e.label ?? id} (${e.agent})${isCand ? ` - observed ${fmt(e.observed)}, clean ${fmt(e.clean)}` : ''}`; g.append(title);
     nodeLayer.append(g);
   }
@@ -149,8 +160,14 @@ const clip = (s, n) => (s.length > n ? s.slice(0, n - 1) + '…' : s);
 
 function renderProof(set, base, rep) {
   const box = $('#proof');
+  const hint = $('#hint');
+  if (state.manual) {
+    const j = judge(state.c, state.d, set);
+    hint.className = 'hint ' + j.kind; hint.replaceChildren(h('b', {}, 'Your repairs: '), set.length ? set.map(lab).join(' + ') : 'none', ' - ', j.text, ' ', h('button', { class: 'ghost small', onclick: clearManual }, 'Back to the answer'));
+  } else { hint.className = 'hint'; hint.replaceChildren('Tip: click any dashed event to try your own repair and see if the run passes.'); }
   if (!set.length) { box.replaceChildren(h('p', { class: 'muted' }, 'Nothing to prove within this size bound.')); return; }
   const w = witnessFor(state.c, set);
+  if (!w.success) { box.replaceChildren(h('p', { class: 'muted' }, 'This combination does not pass, so there is nothing to prove. Clear your picks to see the real repairs.')); return; }
   const name = (ids) => (ids.length ? ids.map((i) => state.c.byId.get(i).label ?? i).join(' + ') : 'no repairs');
   const rows = [
     h('div', { class: 'prow fail' }, h('i'), h('b', {}, 'No repairs'), h('span', {}, 'checks fail: ' + failing(base))),
@@ -172,6 +189,16 @@ function renderCompare() {
     row('One event at a time', cm.singleOnly, cm.singleOnly.matchesExhaustive ? 'same family' : `misses ${cm.singleOnly.missed.join(', ')}`, cm.singleOnly.matchesExhaustive),
   );
 }
+
+function toggle(id) {
+  stop();
+  const cur = new Set(state.manual ?? selectedSet() ?? []);
+  if (!state.manual) { cur.clear(); }
+  if (cur.has(id)) cur.delete(id); else cur.add(id);
+  state.manual = cur; state.step = state.c.order.length;
+  render();
+}
+function clearManual() { state.manual = null; render(); }
 
 function play() {
   if (state.timer) return stop();

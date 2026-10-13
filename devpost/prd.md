@@ -1,10 +1,9 @@
 ---
 doc: prd
-status: draft
+status: approved
 ---
 # Repair Atlas - Product Requirements
 
-> Draft. Needs Akash's read and approval.
 
 ## The Core Journey
 1. Open the app. A failed example workflow is already loaded.
@@ -52,4 +51,4 @@ Probabilistic replay, more operations, exporting a report.
 Automatic fixes, debugging arbitrary programs.
 
 ## Open Questions
-Which visual direction (A, B or C). Akash to choose.
+Visual direction chosen by Akash: B (Lab bench), 2026-10-13.

@@ -1,10 +1,9 @@
 ---
 doc: scope
-status: draft
+status: approved
 ---
 # Repair Atlas
 
-> Draft prepared from Akash's chosen idea and the research summary he saw. It needs his read and a "looks good" before it counts as approved.
 
 ## The Unique Kernel
 When a multi-step AI workflow fails, one fix is often not enough, or any one of two fixes is enough. Repair Atlas finds every smallest combination of the repairs you supply that makes the run pass, and shows which repairs are jointly necessary (AND) and which are alternatives (OR), with a replay that proves each one.

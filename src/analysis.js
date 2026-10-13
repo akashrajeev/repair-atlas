@@ -49,6 +49,20 @@ function classify(fam) {
   return 'mixed';
 }
 
+/** Classify a hand-picked repair set against the computed family. */
+export function judgeSet(c, d, set) {
+  const r = replay(c, set);
+  const fam = d.family;
+  if (r.success) {
+    if (fam.some((f) => f.length === set.length && f.every((x) => set.includes(x)))) return { kind: 'minimal', missing: [], extra: [] };
+    const inside = fam.find((f) => f.every((x) => set.includes(x)));
+    return { kind: 'extra', missing: [], extra: inside ? set.filter((x) => !inside.includes(x)) : [] };
+  }
+  const near = fam.map((f) => ({ f, missing: f.filter((x) => !set.includes(x)) })).sort((x, y) => x.missing.length - y.missing.length)[0];
+  if (near && near.missing.length < near.f.length) return { kind: 'partial', missing: near.missing, extra: [] };
+  return { kind: 'none', missing: [], extra: [] };
+}
+
 /**
  * A witness is a replayable proof for one minimal repair: the repaired run
  * passes, and every strict subset still fails. Anyone can re-run it.
