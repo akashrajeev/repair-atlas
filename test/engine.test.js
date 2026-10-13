@@ -28,7 +28,7 @@ test('no single-event shortcut hides joint repairs', () => {
   assert.deepEqual(d.comparison.singleOnly.missed, ['line_items+tax_amount']);
 });
 
-test('the published pair rule misses chained and 3-way repairs; complete search does not', () => {
+test('the published pair rule (declared domain: pairs, incomparable events) does not cover chained or 3-way repairs; complete search does', () => {
   const seq = diagnose(fx('sequential-handoff'));
   assert.equal(seq.comparison.paper.matchesExhaustive, false);
   assert.equal(seq.comparison.completeMatchesExhaustive, true);

@@ -1,7 +1,7 @@
 {
   "name": "Sequential handoff",
-  "pattern": "chained AND (outside the paper's pair rule)",
-  "story": "Sales sent a wrong quantity, and Logistics then sent a wrong fee computed from it. One event feeds the other, which the published pair rule excludes. Exhaustive replay finds the pair anyway.",
+  "pattern": "chained AND (outside the published pair rule's declared domain)",
+  "story": "Sales sent a wrong quantity, and Logistics then sent a wrong fee computed from it. One event feeds the other, which the published pair rule excludes by design (it targets incomparable events). Exhaustive replay finds the pair anyway.",
   "agents": ["Sales", "Logistics", "Billing"],
   "events": [
     { "id": "order_qty", "agent": "Sales", "label": "Order quantity", "op": "const", "value": 10, "observed": 12, "clean": 10 },

@@ -134,7 +134,7 @@ function draw() {
     g.append(val);
     if (checked.has(id)) {
       const k = cur.checks.find((x) => x.event === id);
-      const badge = el('g', { transform: `translate(${NODE.w - 24},8)`, class: k.pass ? 'ok' : 'bad' });
+      const badge = el('g', { transform: `translate(${NODE.w - 26},${NODE.h - 26})`, class: k.pass ? 'ok' : 'bad' });
       badge.append(el('circle', { cx: 8, cy: 8, r: 9 }), el('path', { d: k.pass ? 'M3.5 8.5l3 3 6-6.5' : 'M4.5 4.5l7 7M11.5 4.5l-7 7', fill: 'none', 'stroke-width': 2, class: 'glyph' }));
       g.append(badge);
     }
@@ -168,7 +168,7 @@ function renderCompare() {
   $('#compare').replaceChildren(
     row('Replay everything', cm.exhaustive, 'accuracy baseline', true),
     row('Atlas search', cm.complete, cm.completeMatchesExhaustive ? 'same family as baseline' : 'MISMATCH', cm.completeMatchesExhaustive),
-    row('Paper pair rule', cm.paper, cm.paper.matchesExhaustive ? 'same family' : `misses ${cm.paper.missed.join(', ')}`, cm.paper.matchesExhaustive),
+    row('Published pair rule', cm.paper, cm.paper.matchesExhaustive ? 'same family' : `outside its declared domain, misses ${cm.paper.missed.join(', ')}`, cm.paper.matchesExhaustive),
     row('One event at a time', cm.singleOnly, cm.singleOnly.matchesExhaustive ? 'same family' : `misses ${cm.singleOnly.missed.join(', ')}`, cm.singleOnly.matchesExhaustive),
   );
 }
