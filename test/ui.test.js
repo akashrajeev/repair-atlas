@@ -40,3 +40,12 @@ test('browser smoke: every fixture renders the formula and zero page errors', { 
     }
   } finally { srv.kill(); }
 });
+
+test('browser: guide panel opens with ?tour', { skip: !chrome && 'no chrome installed' }, async () => {
+  const srv = spawn('node', ['scripts/serve.js'], { env: { ...process.env, PORT: '5193' }, stdio: 'pipe' });
+  await new Promise((r) => srv.stdout.once('data', r));
+  try {
+    const dom = execFileSync(chrome, ['--headless=new', '--no-sandbox', '--disable-gpu', '--virtual-time-budget=4000', '--dump-dom', 'http://127.0.0.1:5193/?f=refund&tour=1'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+    assert.match(dom, /2\/5 The answer/);
+  } finally { srv.kill(); }
+});

@@ -101,3 +101,4 @@ main > *, .stage > * { min-width: 0; }
 .hint.minimal { border-color: var(--good); } .hint.extra { border-color: var(--accent); } .hint.fail { border-color: var(--bad); }
 button.small { padding:4px 10px; font-size:12px; margin-left:8px; }
 .node.clickable { cursor: pointer; } .node.clickable:hover rect { stroke-width: 2.6; }
+.tour { padding:10px 14px; border:1px solid var(--accent); border-radius:10px; background: var(--panel); font-size:14px; } .tour[hidden]{display:none}

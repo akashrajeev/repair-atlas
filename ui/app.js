@@ -38,6 +38,8 @@ async function boot() {
   $('#dl').onclick = download;
   $('#importBtn').onclick = () => openDialog('import');
   $('#verifyBtn').onclick = () => openDialog('verify');
+  $('#tourBtn').onclick = () => tour(0);
+  if (new URLSearchParams(location.search).has('tour')) tour(1);
   load(list[idx].wf);
 }
 
@@ -235,3 +237,19 @@ function openDialog(kind) {
 }
 
 boot();
+
+const TOUR = [
+  ['The failure', 'A run failed. Each box is an event. Dashed boxes have a clean replacement available.'],
+  ['The answer', 'The formula lists every smallest set of replacements that makes the run pass. AND means needed together, OR means alternatives.'],
+  ['The proof', 'Pick a family on the right, then press Play replay. The repaired run passes, and every smaller subset still fails.'],
+  ['Try your own', 'Click dashed events to build your own repair. The page says whether it passes, what is missing, or what is extra.'],
+  ['The cost', 'The comparison at the bottom shows how many replays each search needed, and where one-at-a-time search misses a joint repair.'],
+];
+function tour(i) {
+  const t = $('#tour');
+  if (i >= TOUR.length) { t.hidden = true; return; }
+  t.hidden = false;
+  t.replaceChildren(h('b', {}, `${i + 1}/${TOUR.length} ${TOUR[i][0]}: `), TOUR[i][1],
+    h('button', { class: 'small ghost', onclick: () => tour(i + 1) }, i + 1 < TOUR.length ? 'Next' : 'Done'),
+    h('button', { class: 'small ghost', onclick: () => tour(TOUR.length) }, 'Skip'));
+}

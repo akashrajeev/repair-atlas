@@ -15,10 +15,12 @@
   <label class="field">Repair size bound
     <select id="bound"><option value="1">1 (single)</option><option value="2">2 (pairs)</option><option value="3">3 (triples)</option><option value="4">4</option></select>
   </label>
+  <button id="tourBtn" class="ghost">Guide</button>
   <button id="importBtn" class="ghost">Load workflow JSON</button>
   <button id="verifyBtn" class="ghost">Verify a witness file</button>
 </header>
 <main>
+  <section id="tour" class="tour" hidden></section>
   <section class="story"><h1 id="title"></h1><p id="story"></p></section>
   <section class="stage">
     <div class="left"><div class="hint" id="hint"></div>
