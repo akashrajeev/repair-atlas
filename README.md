@@ -1,6 +1,6 @@
 # Repair Atlas
 
-When a multi-step AI workflow fails, one fix is often not enough, or any one of several fixes is enough. Repair Atlas takes the repairs you already have, tries them in combinations from smallest up, and shows every smallest set that makes the run pass. It marks which repairs are needed together (AND) and which are alternatives (OR), then replays each result as proof: the repaired run passes and every strict subset still fails.
+When a multi-step AI workflow fails, one fix is often not enough, or any one of several fixes is enough. Repair Atlas takes the repairs you already have, tries them in combinations from smallest up, and shows every set that makes the run pass and has no smaller passing set inside it (inclusion-minimal, not only the fewest fixes, so a single fix and a three-fix route can both appear). It marks which repairs are needed together (AND) and which are alternatives (OR), then replays each result as proof: the repaired run passes and every strict subset still fails.
 
 ## Run it
 

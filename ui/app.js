@@ -240,7 +240,7 @@ boot();
 
 const TOUR = [
   ['The failure', 'A run failed. Each box is an event. Dashed boxes have a clean replacement available.'],
-  ['The answer', 'The formula lists every smallest set of replacements that makes the run pass. AND means needed together, OR means alternatives.'],
+  ['The answer', 'The formula lists every repair set that passes and has no smaller passing part inside it. A set of 1 and a set of 3 can both appear. AND means needed together, OR means alternatives.'],
   ['The proof', 'Pick a family on the right, then press Play replay. The repaired run passes, and every smaller subset still fails.'],
   ['Try your own', 'Click dashed events to build your own repair. The page says whether it passes, what is missing, or what is extra.'],
   ['The cost', 'The comparison at the bottom shows how many replays each search needed, and where one-at-a-time search misses a joint repair.'],
