@@ -4,6 +4,8 @@ When a multi-step AI workflow fails, one fix is often not enough, or any one of 
 
 ## Run it
 
+From a clone (needs git and Node 20+): `git clone -b build/repair-atlas-handoff https://github.com/akashrajeev/repair-atlas.git && cd repair-atlas && npm start`, then open http://127.0.0.1:5173. In the page, press Guide for a 5-step tour.
+
 Needs Node 20+ and a browser. No dependencies, no keys.
 
 ```
