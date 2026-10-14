@@ -24,7 +24,7 @@ Hand-built, three visual directions offered (A Cartographer, B Lab bench, C Circ
 ### Workflow loading
 Six built-in workflows covering: single fault, joint AND, alternative OR, three-way AND, OR of AND, chained AND. JSON import with specific error messages.
 ### Repair search
-Finds all inclusion-minimal repair sets up to the bound. Also runs a replay-everything baseline, the published pair rule, and a one-event-at-a-time search for comparison.
+Finds all inclusion-minimal repair sets up to the bound you set; larger sets are not searched unless the bound is raised. Also runs a replay-everything baseline, the published pair rule, and a one-event-at-a-time search for comparison.
 ### Replay proof
 Shows the failing run, every strict subset, and the passing run. Exports a witness file and re-verifies it.
 ### Event roles

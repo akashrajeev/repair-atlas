@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { readFile, readdir } from 'node:fs/promises';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, normalize, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
@@ -18,7 +18,8 @@ createServer(async (req, res) => {
       return res.end(JSON.stringify(files));
     }
     const full = normalize(join(root, p));
-    if (!full.startsWith(root) || !/^\/(ui|src|fixtures)\//.test(p)) { res.writeHead(404); return res.end('not found'); }
+    const rel = '/' + full.slice(root.length).split(sep).join('/'); // judge the resolved path, not the request text
+    if (!full.startsWith(root) || !/^\/(ui|src|fixtures)\//.test(rel)) { res.writeHead(404); return res.end('not found'); }
     const body = await readFile(full);
     res.writeHead(200, { 'content-type': types[extname(full)] ?? 'text/plain', 'cache-control': 'no-store' });
     res.end(body);

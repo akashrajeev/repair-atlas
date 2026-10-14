@@ -37,6 +37,14 @@ export function paperPairFeasible(c, u, v) {
  *  - "complete":   backward slice + level-wise minimality pruning, any maxSize. Exact in the declared domain.
  *  - "paper":      GCJR as published: slice + singletons + structurally filtered pairs (maxSize is 2)
  */
+/** Diagnosis may replay at most this many distinct sets before it stops with a clear message. */
+export const REPLAY_BUDGET = 100000;
+/** The optional every-subset accuracy baseline only runs when it is this cheap. */
+export const BASELINE_BUDGET = 20000;
+export class SearchTooLargeError extends Error {
+  constructor(n, q, replays) { super(`The search for repairs of up to ${q} of ${n} replacements passed ${replays.toLocaleString('en-US')} replays without finishing, over the limit of ${REPLAY_BUDGET.toLocaleString('en-US')}. Lower the size bound or supply fewer replacements.`); this.name = 'SearchTooLargeError'; }
+}
+
 export function findFamily(c, { maxSize = 2, mode = 'complete', backend = makeBackend(c) } = {}) {
   if (mode === 'paper') maxSize = Math.min(maxSize, 2);
   if (backend.run([])) throw new NothingToRepairError();
@@ -50,6 +58,7 @@ export function findFamily(c, { maxSize = 2, mode = 'complete', backend = makeBa
       const hasWinningSubset = family.some((f) => isSubset(f, set));
       if (mode !== 'exhaustive' && hasWinningSubset) { skipped.push({ set, why: 'contains a smaller repair that already works' }); continue; }
       if (mode === 'paper' && k === 2 && !paperPairFeasible(c, set[0], set[1])) { skipped.push({ set, why: 'pair filtered out by graph rule' }); continue; }
+      if (backend.calls > REPLAY_BUDGET) throw new SearchTooLargeError(c.candidates.length, maxSize, backend.calls);
       const ok = backend.run(set);
       tested.push({ set, ok });
       if (ok && !hasWinningSubset) family.push(set);

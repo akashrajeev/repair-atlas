@@ -1,0 +1,22 @@
+{
+  "name": "Order total with a tempting shortcut",
+  "pattern": "joint AND, shortcut breaks a passing check",
+  "story": "The order total is wrong because quantity and unit price are both wrong. Forcing the total to 36 looks like a quick fix, but it breaks the price consistency check that was passing.",
+  "agents": ["Intake", "Pricing", "Support", "Auditor"],
+  "defaultMaxSize": 3,
+  "events": [
+    { "id": "qty", "agent": "Intake", "label": "Quantity", "op": "const", "value": 3, "observed": 2, "clean": 3 },
+    { "id": "unit", "agent": "Pricing", "label": "Unit price", "op": "const", "value": 12, "observed": 10, "clean": 12 },
+    { "id": "manual_flag", "agent": "Support", "label": "Use manual total", "op": "const", "value": true, "observed": false, "clean": true },
+    { "id": "manual_total", "agent": "Support", "label": "Manual total", "op": "const", "value": 36 },
+    { "id": "calc_total", "agent": "Pricing", "label": "Calculated total", "op": "mul", "args": ["qty", "unit"] },
+    { "id": "total", "agent": "Pricing", "label": "Order total", "op": "if", "args": ["manual_flag", "manual_total", "calc_total"] },
+    { "id": "implied_unit", "agent": "Auditor", "label": "Implied unit price", "op": "div", "args": ["total", "qty"] },
+    { "id": "consistent", "agent": "Auditor", "label": "Price consistent?", "op": "eq", "args": ["implied_unit", "unit"] },
+    { "id": "total_ok", "agent": "Auditor", "label": "Total is 36?", "op": "eq", "args": ["total", "manual_total"] }
+  ],
+  "checks": [
+    { "id": "total_correct", "label": "Total is 36", "event": "total_ok", "expect": { "truthy": true } },
+    { "id": "price_consistent", "label": "Price is consistent", "event": "consistent", "expect": { "truthy": true } }
+  ]
+}

@@ -6,8 +6,8 @@
   "private": true,
   "scripts": {
     "start": "node scripts/serve.js",
-    "test": "node --test "test/*.test.js"",
-    "coverage": "node --test --experimental-test-coverage "test/*.test.js"",
+    "test": "node --test \"test/*.test.js\"",
+    "coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
     "analyze": "node src/cli.js analyze"
   },
   "engines": { "node": ">=20" }

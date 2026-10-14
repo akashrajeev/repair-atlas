@@ -1,0 +1,15 @@
+{
+  "name": "Overshoot: fixing both makes it worse",
+  "pattern": "non-monotone: all replacements together fail, one alone works",
+  "story": "A shipment weight check expects 6 kg. Two parcels were logged too light. Fixing only the first parcel gives exactly 6. Fixing both gives 9, so the full set of replacements fails while a smaller set passes. This is why a search must test combinations and cannot judge from the all-replacements run.",
+  "agents": ["Scale A", "Scale B", "Manifest"],
+  "defaultMaxSize": 2,
+  "events": [
+    { "id": "parcel_a", "agent": "Scale A", "label": "Parcel A weight", "op": "const", "value": 1, "observed": 1, "clean": 5 },
+    { "id": "parcel_b", "agent": "Scale B", "label": "Parcel B weight", "op": "const", "value": 1, "observed": 1, "clean": 4 },
+    { "id": "total_weight", "agent": "Manifest", "label": "Manifest total", "op": "add", "args": ["parcel_a", "parcel_b"] }
+  ],
+  "checks": [
+    { "id": "weight_ok", "label": "Total is 6 kg", "event": "total_weight", "expect": { "eq": 6 } }
+  ]
+}

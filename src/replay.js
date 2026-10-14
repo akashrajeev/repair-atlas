@@ -6,6 +6,16 @@ import { checkPasses } from './model.js';
  * clean payload replaces the observed one. Everything downstream is recomputed.
  * `order` may be any valid topological order: the result must not depend on it.
  */
+export class ReplayLimitError extends Error {
+  constructor(id, why) { super(`event "${id}" produced ${why}, over the size limit; replay stopped`); this.name = 'ReplayLimitError'; }
+}
+const MAX_TEXT = 100000;
+function checkSize(id, v) {
+  if (typeof v === 'string' && v.length > MAX_TEXT) throw new ReplayLimitError(id, `text longer than ${MAX_TEXT.toLocaleString('en-US')} characters`);
+  if (Array.isArray(v) && v.some((x) => x !== null && typeof x === 'object')) throw new ReplayLimitError(id, 'a nested list (lists must stay flat)');
+  return v;
+}
+
 export function replay(c, repairs = [], order = c.order) {
   const fixed = new Set(repairs);
   const values = Object.create(null);
@@ -13,7 +23,7 @@ export function replay(c, repairs = [], order = c.order) {
     const e = c.byId.get(id);
     if (fixed.has(id) && 'clean' in e) { values[id] = e.clean; continue; }
     if ('observed' in e) { values[id] = e.observed; continue; }
-    values[id] = e.op === 'const' ? e.value : OPS[e.op].run((e.args ?? []).map((a) => values[a]));
+    values[id] = e.op === 'const' ? e.value : checkSize(id, OPS[e.op].run((e.args ?? []).map((a) => values[a])));
   }
   const checks = c.wf.checks.map((k) => ({ id: k.id, event: k.event, value: values[k.event], pass: checkPasses(k.expect, values[k.event]) }));
   return { values, checks, success: checks.every((k) => k.pass) };

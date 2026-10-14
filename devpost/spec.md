@@ -6,7 +6,7 @@ status: approved
 
 
 ## How This Works, In Plain Language
-A workflow is a list of events. Each event has an agent, an operation, and inputs. Some events are faulty and carry both the faulty payload and a clean one. A repair swaps in the clean payload. Replay recomputes everything downstream and checks the result. The search tries repair sets from smallest to largest and keeps only those that pass while all their smaller subsets fail.
+A workflow is a list of events. Each event has an agent, an operation, and inputs. Some events are faulty and carry both the faulty payload and a clean one. A repair swaps in the clean payload. Replay recomputes everything downstream and checks the result. The search tries repair sets from fewest repairs to most and keeps only those that pass while all their smaller subsets fail.
 
 ## The Core Journey Through the System
 UI loads a workflow, compiles it, runs the search, and renders the diagnosis. Selecting a family replays it and draws the proof.

@@ -16,6 +16,7 @@
     <select id="bound"><option value="1">1 (single)</option><option value="2">2 (pairs)</option><option value="3">3 (triples)</option><option value="4">4</option></select>
   </label>
   <button id="tourBtn" class="ghost">Guide</button>
+  <button id="editBtn" class="ghost">Edit replacements</button>
   <button id="importBtn" class="ghost">Load workflow JSON</button>
   <button id="verifyBtn" class="ghost">Verify a witness file</button>
 </header>
@@ -23,7 +24,7 @@
   <section id="tour" class="tour" hidden></section>
   <section class="story"><h1 id="title"></h1><p id="story"></p></section>
   <section class="stage">
-    <div class="left"><div class="hint" id="hint"></div>
+    <div class="left"><div class="hint" id="hint" role="status"></div>
     <div class="graphwrap"><svg id="graph" role="img" aria-label="Workflow event graph"></svg></div></div>
     <aside class="side">
       <div class="card formula"><div class="eyebrow">Recovery formula</div><div id="formula"></div><div id="kind" class="chip"></div></div>
@@ -38,6 +39,7 @@
         <button id="play">Play replay</button>
         <input id="scrub" type="range" min="0" value="0" aria-label="Replay step">
         <button id="dl" class="ghost">Download witness</button>
+        <button id="rep" class="ghost">Download report</button>
       </div>
     </div>
     <div id="proof"></div>
@@ -45,7 +47,7 @@
   <section class="compare card"><div class="eyebrow">What each search had to replay</div><div id="compare"></div></section>
   <p class="foot">Replays use a deterministic executor over recorded message payloads. Repairs are supplied clean payloads; Repair Atlas finds which combinations matter, it does not invent fixes.</p>
 </main>
-<dialog id="dlg"><form method="dialog"><h2 id="dlgTitle"></h2><textarea id="dlgText" spellcheck="false"></textarea><div id="dlgMsg" class="msg"></div><menu><button value="cancel" class="ghost">Close</button><button id="dlgGo" value="default">Run</button></menu></form></dialog>
+<dialog id="dlg" aria-labelledby="dlgTitle"><form method="dialog"><h2 id="dlgTitle"></h2><div id="dlgForm" hidden></div><textarea id="dlgText" spellcheck="false" aria-label="JSON text"></textarea><div id="dlgMsg" class="msg" role="status"></div><menu><button value="cancel" class="ghost">Close</button><button id="dlgGo" value="default">Run</button></menu></form></dialog>
 <script type="module" src="app.js"></script>
 </body>
 </html>

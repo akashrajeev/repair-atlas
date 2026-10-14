@@ -6,7 +6,7 @@ status: approved
 
 
 ## The Unique Kernel
-When a multi-step AI workflow fails, one fix is often not enough, or any one of two fixes is enough. Repair Atlas finds every combination of the repairs you supply that makes the run pass with no smaller subset that also works, and shows which repairs are jointly necessary (AND) and which are alternatives (OR), with a replay that proves each one.
+When a multi-step AI workflow fails, one fix is often not enough, or any one of two fixes is enough. Repair Atlas finds every combination of the repairs you supply, up to a size bound you choose, that makes the run pass with no smaller subset that also works, and shows which repairs are jointly necessary (AND) and which are alternatives (OR), with a replay that proves each one.
 
 ## Who It's For
 People who debug agent pipelines or multi-step workflows, and judges who need to see the idea work in under three minutes.
